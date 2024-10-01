@@ -1,0 +1,28 @@
+# Kodi Media Center language file
+msgid ""
+msgstr ""
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "#32010"
+msgid "RPi Fan Control for joy-IT Multimedia Cases"
+msgstr "RPi Lüftersteuerung für joy-IT Mitlimedia Gehäuse"
+
+msgctxt "#32020"
+msgid "Warning: This service is only assigned to RPi Devices assembled to a joy-IT or similar Multimedia Case with PWM Fan Control."
+msgstr "Achtung: Dieser Dienst ist ausschliesslich für RPi-Geräte geeignet, welche in ein joy-IT Multimedia Gehäuse oder in einem Gehäuse mit PWM Lüftersteuerung verbaut sind."
+
+msgctxt "#32021"
+msgid "GPIO Pin of PWM Fan Control"
+msgstr "GPIO Pin der PWM Lüftersteuerung"
+
+msgctxt "#32022"
+msgid "Fan Control starts up from (°C)"
+msgstr "Lüftersteuerung startet ab (°C)"
+
+msgctxt "#32023"
+msgid "Fan Control cool down to (°C)"
+msgstr "Lüftersteuerung kühlt herunter bis (°C)"

@@ -1,13 +1,19 @@
-from xbmc import Monitor, log, LOGINFO
+from xbmc import Monitor, log, LOGINFO, LOGERROR
+from xbmcaddon import Addon
+from xbmcgui import Dialog
+
 import os
 os.environ['LG_WD'] = '/storage/.kodi/temp'
 from gpiozero import CPUTemperature, PWMOutputDevice
 
-led = PWMOutputDevice(17, initial_value=0, frequency=25) # PWM-Pin
+addon =  Addon(id='service.joy-it.fancontrol')
+LOC = addon.getLocalizedString
+addonName = addon.getAddonInfo('name')
+addonVersion = addon.getAddonInfo('version')
 
-startTemp = 60.0 # Temperature at which the fan goes on
-coolDown = 50.0  # Temperature to which it is cooled down
-active_coolDown = False # Variable to cool down
+startTemp = float(addon.getSetting('start_cooling'))   # Temperature at which the fan goes on
+coolDown = float(addon.getSetting('stop_cooling'))     # Temperature to which it is cooled down
+active_coolDown = False                                # Variable to cool down
 fanStatus = False
 
 pTemp = 8 # Proportional part
@@ -18,40 +24,48 @@ sum = 0 # Memory variable for ishare
 
 monitor = Monitor()
 
-log('Joy-IT fan control service started', LOGINFO)
-while not monitor.abortRequested():
-	if monitor.waitForAbort(1): break
+try:
+	led = PWMOutputDevice(int(addon.getSetting('gpio_pin')), initial_value=0, frequency=25) # PWM-Pin
 
-	cpu = CPUTemperature() # Reading the current temperature
-	actTemp = cpu.temperature # Current temperature as float variable
+	log('[%s %s] Joy-IT fan control service started' % (addonName, addonVersion), LOGINFO)
+	while not monitor.abortRequested():
+		if monitor.waitForAbort(1): break
 
-	if actTemp < coolDown: active_coolDown = False # do not cool
-	else: active_coolDown = True # cool
+		cpu = CPUTemperature() # Reading the current temperature
+		actTemp = cpu.temperature # Current temperature as float variable
 
-	diff = actTemp - startTemp
-	sum += diff
-	pDiff = diff * pTemp
-	iDiff = sum * iTemp
+		if actTemp < coolDown: active_coolDown = False # do not cool
+		else: active_coolDown = True # cool
 
-	# Adjust fan speed
-	if active_coolDown:
-		fanSpeed = pDiff + iDiff + 35
+		diff = actTemp - startTemp
+		sum += diff
+		pDiff = diff * pTemp
+		iDiff = sum * iTemp
 
-	# set fan to zero
-	else: fanSpeed = 0
+		# Adjust fan speed
+		if active_coolDown:
+			fanSpeed = pDiff + iDiff + 35
 
-	# Set boundary values
-	if fanSpeed > 100: fanSpeed = 100
+		# set fan to zero
+		else: fanSpeed = 0
 
-	if sum > 100: sum = 100
-	elif sum < -100: sum = -100
+		# Set boundary values
+		if fanSpeed > 100: fanSpeed = 100
 
-	if fanStatus ^ active_coolDown:
-		fanStatus = active_coolDown
-		if active_coolDown: log('active cooling started, %s °C, speed %s' % (actTemp, fanSpeed), LOGINFO)
-		else: log('active cooling stopped, %s °C' % actTemp, LOGINFO)
+		if sum > 100: sum = 100
+		elif sum < -100: sum = -100
 
-	# PWM output
-	led.value = fanSpeed / 100
+		if fanStatus ^ active_coolDown:
+			fanStatus = active_coolDown
+			if active_coolDown: log('[%s %s] active cooling started, %s °C, speed %s' % (addonName, addonVersion, actTemp, fanSpeed), LOGINFO)
+			else: log('[%s %s] active cooling stopped, %s °C' % (addonName, addonVersion, actTemp), LOGINFO)
 
-log('Joy-IT fan control service finished', LOGINFO)
+		# PWM output
+		led.value = fanSpeed / 100
+
+except Exception as e:
+
+	log(str(e), LOGERROR)
+	Dialog().ok(addonName, LOC(32020))
+
+log('[%s %s] Joy-IT fan control service finished' % (addonName, addonVersion), LOGINFO)
