@@ -1,6 +1,6 @@
 from xbmc import Monitor, log, LOGINFO
 import os
-os.environ['LG_WD'] = '/tmp'
+os.environ['LG_WD'] = '/storage/.kodi/temp'
 from gpiozero import CPUTemperature, PWMOutputDevice
 
 led = PWMOutputDevice(17, initial_value=0, frequency=25) # PWM-Pin
