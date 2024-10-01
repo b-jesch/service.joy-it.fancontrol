@@ -1,9 +1,11 @@
+import gpiozero
 from xbmc import Monitor, log, LOGINFO, LOGERROR
 from xbmcaddon import Addon
 from xbmcgui import Dialog
 
 import os
 os.environ['LG_WD'] = '/storage/.kodi/temp'
+
 from gpiozero import CPUTemperature, PWMOutputDevice
 
 addon =  Addon(id='service.joy-it.fancontrol')
@@ -23,11 +25,11 @@ fanSpeed = 0 # Fan speed
 sum = 0 # Memory variable for ishare
 
 monitor = Monitor()
+log('[%s %s] Joy-IT fan control service started' % (addonName, addonVersion), LOGINFO)
 
 try:
 	led = PWMOutputDevice(int(addon.getSetting('gpio_pin')), initial_value=0, frequency=25) # PWM-Pin
 
-	log('[%s %s] Joy-IT fan control service started' % (addonName, addonVersion), LOGINFO)
 	while not monitor.abortRequested():
 		if monitor.waitForAbort(1): break
 
@@ -63,9 +65,9 @@ try:
 		# PWM output
 		led.value = fanSpeed / 100
 
-except Exception as e:
+except gpiozero.GPIOZeroError as e:
 
-	log(str(e), LOGERROR)
+	log('[%s %s] %s' % str(e), LOGERROR)
 	Dialog().ok(addonName, LOC(32020))
 
 log('[%s %s] Joy-IT fan control service finished' % (addonName, addonVersion), LOGINFO)
