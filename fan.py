@@ -1,5 +1,5 @@
 import gpiozero
-from xbmc import Monitor, log, LOGINFO, LOGERROR
+from xbmc import Monitor, log, LOGINFO, LOGERROR, LOGDEBUG
 from xbmcaddon import Addon
 from xbmcgui import Dialog
 
@@ -17,6 +17,7 @@ startTemp = float(addon.getSetting('start_cooling'))   # Temperature at which th
 coolDown = float(addon.getSetting('stop_cooling'))     # Temperature to which it is cooled down
 active_coolDown = False                                # Variable to cool down
 fanStatus = False
+count = 0
 
 pTemp = 8 # Proportional part
 iTemp = 0.2 # Integral part
@@ -57,6 +58,11 @@ try:
 		if sum > 100: sum = 100
 		elif sum < -100: sum = -100
 
+		# Debug every x seconds, if enabled
+		if addon.getSetting('debug').upper() == 'TRUE' and not (count % int(addon.getSetting('interval'))):
+			log('[%s %s] CPU: %s °C, Fan speed %s' % (addonName, addonVersion, actTemp, fanSpeed), LOGDEBUG)
+		count += 1
+
 		if fanStatus ^ active_coolDown:
 			fanStatus = active_coolDown
 			if active_coolDown: log('[%s %s] active cooling started, %s °C, speed %s' % (addonName, addonVersion, actTemp, fanSpeed), LOGINFO)
@@ -67,7 +73,7 @@ try:
 
 except gpiozero.GPIOZeroError as e:
 
-	log('[%s %s] %s' % str(e), LOGERROR)
+	log('[%s %s] %s' % (addonName, addonVersion, str(e)), LOGERROR)
 	Dialog().ok(addonName, LOC(32020))
 
 log('[%s %s] Joy-IT fan control service finished' % (addonName, addonVersion), LOGINFO)

@@ -26,3 +26,11 @@ msgstr ""
 msgctxt "#32023"
 msgid "Fan Control cool down to (°C)"
 msgstr ""
+
+msgctxt "#32024"
+msgid "Write CPU Temperature and Fan Speed to Debug Log"
+msgstr ""
+
+msgctxt "#32025"
+msgid "Interval (Seconds)"
+msgstr ""

@@ -26,3 +26,11 @@ msgstr "Lüftersteuerung startet ab (°C)"
 msgctxt "#32023"
 msgid "Fan Control cool down to (°C)"
 msgstr "Lüftersteuerung kühlt herunter bis (°C)"
+
+msgctxt "#32024"
+msgid "Write CPU Temperature and Fan Speed to Debug Log"
+msgstr "Schreibe CPU Temp. und Lüfterdrehzahl ins Debug Log"
+
+msgctxt "#32025"
+msgid "Interval (Seconds)"
+msgstr "Intervall (Sekunden)"
