@@ -20,11 +20,7 @@ msgid "GPIO Pin of PWM Fan Control"
 msgstr ""
 
 msgctxt "#32022"
-msgid "Fan Control starts up from (°C)"
-msgstr ""
-
-msgctxt "#32023"
-msgid "Fan Control cool down to (°C)"
+msgid "Fan Control starts up above (°C)"
 msgstr ""
 
 msgctxt "#32024"

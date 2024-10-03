@@ -2,8 +2,7 @@
 <settings>
     <category label="10140">
         <setting id="gpio_pin" type="number" default="17" label="32021"/>
-		<setting id="start_cooling" type="slider" default="60" range="60,1,70" option="int" label="32022" />
-		<setting id="stop_cooling" type="slider" default="50" range="40,1,55" option="int" label="32023" />
+		<setting id="start_cooling" type="slider" default="40" range="40,1,60" option="int" label="32022" />
 		<setting type="sep" />
 		<setting id="debug" type="bool" default="false" label="32024" />
 		<setting id="interval" type="slider" subsetting="true" default="20" range="10,5,60" option="int" label="32025" enable="eq(-1,true)" />

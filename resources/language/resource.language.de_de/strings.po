@@ -20,12 +20,8 @@ msgid "GPIO Pin of PWM Fan Control"
 msgstr "GPIO Pin der PWM Lüftersteuerung"
 
 msgctxt "#32022"
-msgid "Fan Control starts up from (°C)"
+msgid "Fan Control starts up above (°C)"
 msgstr "Lüftersteuerung startet ab (°C)"
-
-msgctxt "#32023"
-msgid "Fan Control cool down to (°C)"
-msgstr "Lüftersteuerung kühlt herunter bis (°C)"
 
 msgctxt "#32024"
 msgid "Write CPU Temperature and Fan Speed to Debug Log"

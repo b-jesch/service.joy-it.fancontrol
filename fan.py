@@ -13,17 +13,19 @@ LOC = addon.getLocalizedString
 addonName = addon.getAddonInfo('name')
 addonVersion = addon.getAddonInfo('version')
 
-startTemp = float(addon.getSetting('start_cooling'))   # Temperature at which the fan goes on
-coolDown = float(addon.getSetting('stop_cooling'))     # Temperature to which it is cooled down
+# Configurable temperature and fan speed
+MIN_TEMP = int(addon.getSetting('start_cooling'))   	# Temperature at which the fan goes on,
+														# under this temp value fan is switched to the FAN_OFF speed
+MAX_TEMP = 75           								# over this temp value fan is switched to the FAN_MAX speed
+FAN_LOW = 30            								# lower side of the fan speed range during cooling
+FAN_HIGH = 99           								# higher side of the fan speed range during cooling
+FAN_OFF = 20            								# fan speed to set if the detected temp is below MIN_TEMP
+FAN_MAX = 100           								# fan speed to set if the detected temp is above MAX_TEMP
+
+fanSpeed = 0
 active_coolDown = False                                # Variable to cool down
 fanStatus = False
 count = 0
-
-pTemp = 8 # Proportional part
-iTemp = 0.2 # Integral part
-
-fanSpeed = 0 # Fan speed
-sum = 0 # Memory variable for ishare
 
 monitor = Monitor()
 log('[%s %s] Joy-IT fan control service started' % (addonName, addonVersion), LOGINFO)
@@ -34,42 +36,36 @@ try:
 	while not monitor.abortRequested():
 		if monitor.waitForAbort(1): break
 
-		cpu = CPUTemperature() # Reading the current temperature
-		actTemp = cpu.temperature # Current temperature as float variable
+		CpuTemp = CPUTemperature().temperature # Current temperature
 
-		if actTemp < coolDown: active_coolDown = False # do not cool
-		else: active_coolDown = True # cool
+		if CpuTemp < MIN_TEMP:
+			fanSpeed = FAN_OFF
+			active_coolDown = False
 
-		diff = actTemp - startTemp
-		sum += diff
-		pDiff = diff * pTemp
-		iDiff = sum * iTemp
+		# Set fan speed to MAXIMUM if the temperature is above MAX_TEMP
+		elif CpuTemp > MAX_TEMP:
+			fanSpeed = FAN_MAX
+			active_coolDown = True
 
-		# Adjust fan speed
-		if active_coolDown:
-			fanSpeed = pDiff + iDiff + 35
+		# Caculate dynamic fan speed
+		else:
+			step = (FAN_HIGH - FAN_LOW) / (MAX_TEMP - MIN_TEMP)
+			CpuTemp -= MIN_TEMP
+			fanSpeed = FAN_LOW + CpuTemp * step
+			active_coolDown = True
 
-		# set fan to zero
-		else: fanSpeed = 0
-
-		# Set boundary values
-		if fanSpeed > 100: fanSpeed = 100
-
-		if sum > 100: sum = 100
-		elif sum < -100: sum = -100
+		# PWM Output
+		led.value = fanSpeed / 100
 
 		# Debug every x seconds, if enabled
-		if addon.getSetting('debug').upper() == 'TRUE' and not (count % int(addon.getSetting('interval'))):
-			log('[%s %s] CPU: %s °C, Fan speed %s' % (addonName, addonVersion, actTemp, fanSpeed), LOGDEBUG)
+		if addon.getSetting('debug').upper() == 'TRUE' and not (count % int(addon.getSetting('interval'))) and count > 0:
+			log('[%s %s] CPU: %s °C, Fan speed %s' % (addonName, addonVersion, CpuTemp, fanSpeed), LOGDEBUG)
 		count += 1
 
 		if fanStatus ^ active_coolDown:
 			fanStatus = active_coolDown
-			if active_coolDown: log('[%s %s] active cooling started, %s °C, speed %s' % (addonName, addonVersion, actTemp, fanSpeed), LOGINFO)
-			else: log('[%s %s] active cooling stopped, %s °C' % (addonName, addonVersion, actTemp), LOGINFO)
-
-		# PWM output
-		led.value = fanSpeed / 100
+			if active_coolDown: log('[%s %s] active cooling started, %s °C, speed %s' % (addonName, addonVersion, CpuTemp, fanSpeed), LOGINFO)
+			else: log('[%s %s] active cooling stopped, %s °C' % (addonName, addonVersion, CpuTemp), LOGINFO)
 
 except gpiozero.GPIOZeroError as e:
 
