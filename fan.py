@@ -61,13 +61,13 @@ try:
 
 		# Debug every x seconds, if enabled
 		if addon.getSetting('debug').upper() == 'TRUE' and not (count % int(addon.getSetting('interval'))) and count > 0:
-			log('[%s %s] CPU: %s °C, Fan speed %s' % (addonName, addonVersion, CpuTemp.__format__('3.2f'), int(fanSpeed)), LOGDEBUG)
+			log('[%s %s] CPU: %s °C, Fan speed %s' % (addonName, addonVersion, CpuTemp.__format__('3.1f'), int(fanSpeed)), LOGDEBUG)
 		count += 1
 
 		if fanStatus ^ active_coolDown:
 			fanStatus = active_coolDown
-			if active_coolDown: log('[%s %s] active cooling started, %s °C, speed %s' % (addonName, addonVersion, CpuTemp.__format__('3.2f'), int(fanSpeed)), LOGINFO)
-			else: log('[%s %s] active cooling stopped, %s °C' % (addonName, addonVersion, CpuTemp), LOGINFO)
+			if active_coolDown: log('[%s %s] start active cooling, %s °C, speed %s' % (addonName, addonVersion, CpuTemp.__format__('3.1f'), int(fanSpeed)), LOGINFO)
+			else: log('[%s %s] suspend active cooling, %s °C' % (addonName, addonVersion, CpuTemp.__format__('3.1f')), LOGINFO)
 
 except gpiozero.GPIOZeroError as e:
 
