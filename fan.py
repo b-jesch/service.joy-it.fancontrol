@@ -21,6 +21,7 @@ FAN_LOW = 40											# lower side of the fan speed range during cooling
 FAN_HIGH = 99											# higher side of the fan speed range during cooling
 FAN_OFF = 20											# fan speed to set if the detected temp is below MIN_TEMP
 FAN_MAX = 100											# fan speed to set if the detected temp is above MAX_TEMP
+FAN_HYSTERESIS = 2										# fan hysteresis between start and stop (half value)
 
 fanSpeed = 0
 active_coolDown = False                                # Variable to cool down
@@ -38,7 +39,7 @@ try:
 
 		CpuTemp = CPUTemperature().temperature
 
-		if CpuTemp < MIN_TEMP:
+		if CpuTemp < MIN_TEMP - FAN_HYSTERESIS:
 			fanSpeed = FAN_OFF
 			active_coolDown = False
 
@@ -49,10 +50,11 @@ try:
 
 		# Caculate dynamic fan speed
 		else:
-			step = (FAN_HIGH - FAN_LOW) / (MAX_TEMP - MIN_TEMP)
-			CpuDiff = CpuTemp -  MIN_TEMP
-			fanSpeed = FAN_LOW + CpuDiff * step
-			active_coolDown = True
+			if CpuTemp > MIN_TEMP + FAN_HYSTERESIS:
+				step = (FAN_HIGH - FAN_LOW) / (MAX_TEMP - MIN_TEMP)
+				CpuDiff = CpuTemp -  MIN_TEMP
+				fanSpeed = FAN_LOW + CpuDiff * step
+				active_coolDown = True
 
 		# PWM Output
 		fan.value = fanSpeed / 100
