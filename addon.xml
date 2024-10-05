@@ -8,9 +8,9 @@
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		<summary lang="en_GB">Joy-IT Case Fan Controller Service</summary>
-		<description lang="en_GB">This Service will automatically be run on Kodi startup and controls the Fan of the Joy-IT Raspberry Case.[CR][CR]Any changes needs a Kodi restart!</description>
+		<description lang="en_GB">This Service will automatically be run on Kodi startup and controls the Fan of the Joy-IT Raspberry Case or other Raspberry Cases with a Fan. [CR][CR]Any changes needs a Kodi restart!</description>
 		<platform>all</platform>
-		<disclaimer lang="en_GB">Warning: This service is only assigned to RPi Devices assembled to a joy-IT Multimedia Case</disclaimer>
+		<disclaimer lang="en_GB">Warning: This service is only assigned to RPi Devices assembled to a joy-IT or other Multimedia Case with a Fan</disclaimer>
 		<license>GNU GENERAL PUBLIC LICENSE Version 2</license>
 		<source>https://github.com/b-jesch/service.joy-it.fancontrol</source>
         <assets>
