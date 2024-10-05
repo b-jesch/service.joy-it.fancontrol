@@ -7,21 +7,20 @@ import os
 os.environ['LG_WD'] = '/storage/.kodi/temp'
 
 from gpiozero import CPUTemperature, PWMOutputDevice
+from gpiozero.pins import lgpio
 
 addon =  Addon(id='service.joy-it.fancontrol')
 LOC = addon.getLocalizedString
 addonName = addon.getAddonInfo('name')
 addonVersion = addon.getAddonInfo('version')
 
-# Configurable temperature and fan speed
-MIN_TEMP = int(addon.getSetting('start_cooling'))   	# Temperature at which the fan goes on,
+MIN_TEMP = int(addon.getSetting('start_cooling'))		# Temperature at which the fan goes on,
 														# under this temp value fan is switched to the FAN_OFF speed
-MAX_TEMP = 75           								# over this temp value fan is switched to the FAN_MAX speed
-FAN_LOW = 40            								# lower side of the fan speed range during cooling
-FAN_HIGH = 99           								# higher side of the fan speed range during cooling
-FAN_OFF = 20            								# fan speed to set if the detected temp is below MIN_TEMP
-FAN_MAX = 100           								# fan speed to set if the detected temp is above MAX_TEMP
-HYSTERESIS = 5
+MAX_TEMP = 75											# over this temp value fan is switched to the FAN_MAX speed
+FAN_LOW = 40											# lower side of the fan speed range during cooling
+FAN_HIGH = 99											# higher side of the fan speed range during cooling
+FAN_OFF = 20											# fan speed to set if the detected temp is below MIN_TEMP
+FAN_MAX = 100											# fan speed to set if the detected temp is above MAX_TEMP
 
 fanSpeed = 0
 active_coolDown = False                                # Variable to cool down
@@ -32,14 +31,14 @@ monitor = Monitor()
 log('[%s %s] Joy-IT fan control service started' % (addonName, addonVersion), LOGINFO)
 
 try:
-	led = PWMOutputDevice(int(addon.getSetting('gpio_pin')), initial_value=0, frequency=25) # PWM-Pin
+	fan = PWMOutputDevice(int(addon.getSetting('gpio_pin')), initial_value=0, frequency=25) # PWM-Pin
 
 	while not monitor.abortRequested():
 		if monitor.waitForAbort(1): break
 
 		CpuTemp = CPUTemperature().temperature
 
-		if CpuTemp < MIN_TEMP - HYSTERESIS:
+		if CpuTemp < MIN_TEMP:
 			fanSpeed = FAN_OFF
 			active_coolDown = False
 
@@ -56,7 +55,7 @@ try:
 			active_coolDown = True
 
 		# PWM Output
-		led.value = fanSpeed / 100
+		fan.value = fanSpeed / 100
 
 		# Debug every x seconds, if enabled
 		if addon.getSetting('debug').upper() == 'TRUE' and not (count % int(addon.getSetting('interval'))) and count > 0:
@@ -73,5 +72,7 @@ except gpiozero.GPIOZeroError as e:
 	log('[%s %s] %s' % (addonName, addonVersion, str(e)), LOGERROR)
 	Dialog().ok(addonName, LOC(32020))
 
-led.close()
+fan.off()
+fan.close()
+
 log('[%s %s] Joy-IT fan control service finished' % (addonName, addonVersion), LOGINFO)
