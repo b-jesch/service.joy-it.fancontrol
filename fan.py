@@ -27,6 +27,7 @@ fanSpeed = 0
 active_coolDown = False                                # Variable to cool down
 fanStatus = False
 count = 0
+step = (FAN_HIGH - FAN_LOW) / (MAX_TEMP - MIN_TEMP)
 
 monitor = Monitor()
 log('[%s %s] Joy-IT fan control service started' % (addonName, addonVersion), LOGINFO)
@@ -48,13 +49,11 @@ try:
 			fanSpeed = FAN_MAX
 			active_coolDown = True
 
+		elif CpuTemp > MIN_TEMP:
+			active_coolDown = True
+
 		# Caculate dynamic fan speed
-		else:
-			if CpuTemp > MIN_TEMP + FAN_HYSTERESIS:
-				step = (FAN_HIGH - FAN_LOW) / (MAX_TEMP - MIN_TEMP)
-				CpuDiff = CpuTemp -  MIN_TEMP
-				fanSpeed = FAN_LOW + CpuDiff * step
-				active_coolDown = True
+		fanSpeed = FAN_LOW + ((CpuTemp - MIN_TEMP) * step)
 
 		# PWM Output
 		fan.value = fanSpeed / 100
