@@ -73,7 +73,8 @@ except gpiozero.GPIOZeroError as e:
 	log('[%s %s] %s' % (addonName, addonVersion, str(e)), LOGERROR)
 	Dialog().ok(addonName, LOC(32020))
 
-fan.off()
+# set fan speed to max when script terminates or aborts (avoid overheating)
+fan.value = FAN_MAX / 100
 fan.close()
 
 log('[%s %s] Joy-IT fan control service finished' % (addonName, addonVersion), LOGINFO)
