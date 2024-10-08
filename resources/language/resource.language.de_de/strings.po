@@ -12,8 +12,8 @@ msgid "RPi Fan Control for joy-IT Multimedia Cases"
 msgstr "RPi Lüftersteuerung für joy-IT Mitlimedia Gehäuse"
 
 msgctxt "#32020"
-msgid "Warning: This service is only assigned to RPi Devices assembled to a joy-IT or similar Multimedia Case with PWM Fan Control."
-msgstr "Achtung: Dieser Dienst ist ausschliesslich für RPi-Geräte geeignet, welche in ein joy-IT Multimedia Gehäuse oder in einem Gehäuse mit PWM Lüftersteuerung verbaut sind."
+msgid "An Error has occured! Warning: This addon is only assigned to RPi Devices assembled to a joy-IT or similar Multimedia Case with PWM Fan Control."
+msgstr "Ein Fehler ist aufgetreten! Achtung: Dieses Addon ist ausschliesslich für RPi-Geräte geeignet, welche in ein joy-IT Multimedia Gehäuse oder in einem Gehäuse mit PWM Lüftersteuerung verbaut sind."
 
 msgctxt "#32021"
 msgid "GPIO Pin of PWM Fan Control"
