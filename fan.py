@@ -15,8 +15,6 @@ LOC = addon.getLocalizedString
 addonName = addon.getAddonInfo('name')
 addonVersion = addon.getAddonInfo('version')
 
-MIN_TEMP = int(addon.getSetting('start_cooling'))		# Temperature at which the fan goes on,
-														# under this temp value fan is switched to the FAN_OFF speed
 MAX_TEMP = 70											# over this temp value fan is switched to the FAN_MAX speed
 FAN_LOW = 35											# lower side of the fan speed range during cooling
 FAN_OFF = 20											# fan speed to set if the detected temp is below MIN_TEMP
@@ -27,7 +25,6 @@ fanSpeed = 0
 active_coolDown = False                                # Variable to cool down
 fanStatus = False
 count = 0
-step = (FAN_MAX - FAN_LOW) / (MAX_TEMP - MIN_TEMP)
 
 # Get CPU's temperature
 def getCpuTemperature():
@@ -50,8 +47,10 @@ try:
 		if monitor.waitForAbort(1): break
 
 		CpuTemp = getCpuTemperature()
+		minTemp = int(addon.getSetting('start_cooling'))
+		step = (FAN_MAX - FAN_LOW) / (MAX_TEMP - minTemp)
 
-		if CpuTemp < MIN_TEMP - FAN_HYSTERESIS:
+		if CpuTemp < minTemp - FAN_HYSTERESIS:
 			fanSpeed = FAN_OFF
 			active_coolDown = False
 
@@ -60,13 +59,13 @@ try:
 			fanSpeed = FAN_MAX
 			active_coolDown = True
 
-		elif CpuTemp < MIN_TEMP + FAN_HYSTERESIS:
+		elif CpuTemp < minTemp + FAN_HYSTERESIS:
 			fanSpeed = FAN_LOW
 			active_coolDown = False
 
 		# Caculate dynamic fan speed
 		else:
-			fanSpeed = int(FAN_LOW + ((CpuTemp - MIN_TEMP) * step))
+			fanSpeed = int(FAN_LOW + ((CpuTemp - minTemp) * step))
 			active_coolDown = True
 
 		# PWM Output
